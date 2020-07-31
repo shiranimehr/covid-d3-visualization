@@ -1,245 +1,634 @@
 <!DOCTYPE html>
-<meta charset="utf-8">
+<html>
 
-<!-- Load d3.js -->
-<script src="https://d3js.org/d3.v5.js"></script>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    * {
+      box-sizing: border-box
+    }
 
-<!-- Initialize a select button -->
-<select id="selectButton1"></select>
-<select id="selectButton2"></select>
+    body {
+      font-family: Verdana, sans-serif;
+      margin: 0
+    }
 
-<!-- Create a div where the graph will take place -->
-<div id="my_dataviz"></div>
+    /* Slideshow container */
 
-<!-- Color Scale -->
+    .slideshow-container {
+      position: relative;
+      background: #f1f1f1f1;
+    }
 
-<script>
+    /* Slides */
 
-// set the dimensions and margins of the graph
-var margin = {top: 10, right: 30, bottom: 30, left: 60},
-    width = 460 - margin.left - margin.right,
-    height = 400 - margin.top - margin.bottom;
+    .mySlides {
+      display: none;
+      padding: 80px;
+      text-align: center;
+    }
 
-  // parse the date / time
- var parser = d3.timeParse("%Y-%m-%d");
-  
-// append the svg object to the body of the page
-//var svg = d3.select("#my_dataviz")
-//  .append("svg")
-//    .attr("width", width + margin.left + margin.right)
-//    .attr("height", height + margin.top + margin.bottom)
-//  .append("g")
-//    .attr("transform",
-//          "translate(" + margin.left + "," + margin.top + ")");
+    /* Next & previous buttons */
 
-  // set the ranges
-    var x = d3.scaleTime().range([0, width]);
-    var xAxis = d3.axisBottom(x);
-    var y = d3.scaleLinear().range([height, 0]);
-    var yAxis = d3.axisLeft(y);
-    
-  // define the line
-    var valueline = d3.line()
-                      .x(function(d) { return x(d.date); })
-                      .y(function(d) { return y(d.total_cases); });
-  
-  // append the svg obgect to the body of the page
-// appends a 'group' element to 'svg'
-// moves the 'group' element to the top left margin
-var svg = d3.select("body").append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-  .append("g")
-    .attr("transform",
-          "translate(" + margin.left + "," + margin.top + ")");
-  
-//Read the data
-d3.csv("full_data.csv").then(function(data) {
+    .prev,
+    .next {
+      cursor: pointer;
+      position: absolute;
+      top: 50%;
+      width: auto;
+      margin-top: -30px;
+      padding: 16px;
+      color: #888;
+      font-weight: bold;
+      font-size: 20px;
+      border-radius: 0 3px 3px 0;
+      user-select: none;
+    }
 
-   // format the data
-  //data.forEach(function(d) {
-  //    d.year = parseTime(d.year);
-  //    d.n = +d.n;
-  //    d.name = d.name;
-  //});
-  
-           data.forEach(function(d) {
+    /* Position the "next button" to the right */
+
+    .next {
+      position: absolute;
+      right: 0;
+      border-radius: 3px 0 0 3px;
+    }
+
+    /* On hover, add a black background color with a little bit see-through */
+
+    .prev:hover,
+    .next:hover {
+      background-color: rgba(0, 0, 0, 0.8);
+      color: white;
+    }
+
+    /* The dot/bullet/indicator container */
+
+    .dot-container {
+      text-align: center;
+      padding: 20px;
+      background: #ddd;
+    }
+
+    /* The dots/bullets/indicators */
+
+    .dot {
+      cursor: pointer;
+      height: 15px;
+      width: 15px;
+      margin: 0 2px;
+      background-color: #bbb;
+      border-radius: 50%;
+      display: inline-block;
+      transition: background-color 0.6s ease;
+    }
+
+    /* Add a background color to the active dot/circle */
+
+    .active,
+    .dot:hover {
+      background-color: #717171;
+    }
+
+    /* Add an italic font style to all quotes */
+
+    q {
+      font-style: italic;
+    }
+
+    /* Add a blue color to the author */
+
+    .author {
+      color: cornflowerblue;
+    }
+
+    .grid line {
+      stroke: lightgrey;
+      stroke-opacity: 0.6;
+      shape-rendering: crispEdges
+    }
+
+    .grid path {
+      stroke-width: 0;
+    }
+
+    .barBlue {
+      fill: #1F77B4FF;
+    }
+
+    .barRed {
+      fill: #D62728FF;
+    }
+
+    .legend rect {
+      fill: white;
+      stroke: black;
+      opacity: 0.8;
+    }
+  </style>
+</head>
+
+<body>
+
+  <script src="https://d3js.org/d3.v5.min.js"></script>
+  <div class="slideshow-container">
+
+    <div class="mySlides">
+
+      <!-- Create a div where the graph will take place -->
+      <div id="dataviz1"></div>
+
+      <script>
+        // set the dimensions and margins of the graph
+        var margin = {
+            top: 10,
+            right: 120,
+            bottom: 30,
+            left: 120
+          },
+          width = 2 * 460 - margin.left - margin.right,
+          height = 2 * 400 - margin.top - margin.bottom;
+        // append the svg obgect to the body of the page
+        // appends a 'group' element to 'svg'
+        // moves the 'group' element to the top left margin
+        var svg1 = d3.select("#dataviz1").append("svg")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom)
+          .append("g")
+          .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
+        // set the ranges
+        var x1 = d3.scaleLinear().range([0, width]);
+        var xAxis1 = d3.axisBottom(x1);
+        var y1 = d3.scaleBand().rangeRound([height, 0]).padding(0.1);
+        var yAxis1 = d3.axisLeft(y1);
+        var parser = d3.timeParse("%Y-%m-%d");
+
+        function getTopTen(d) {
+          d.sort(function(a, b) {
+            return d3.ascending(b.value, a.value);
+          });
+          return d.slice(1, 11);
+        }
+        //Read the data
+        d3.csv("full_data.csv").then(function(data) {
+          data.forEach(function(d) {
             d.date = parser(d.date);
-            //d.date = d.date;
             d.total_cases = +d.total_cases;
             d.location = d.location;
           });
-  
-    
-    // List of groups (here I have one group per column)
-    var allGroup = d3.map(data, function(d){return(d.location)}).keys()
+          // List of groups (here I have one group per column)
+          var allGroup = d3.map(data, function(d) {
+            return (d.location)
+          }).keys()
+          var totalCases = d3.nest().key(function(d) {
+            return d.location;
+          }).rollup(function(v) {
+            return v.pop().total_cases;
+          }).entries(data);
+          var topTenTotCase = getTopTen(totalCases)
+          topTenTotCase.sort(function(a, b) {
+            return d3.ascending(a.value, b.value);
+          });
+          //var topTenTotDeath = GetTopTen(totalDeaths);
+          var maxX1 = d3.max(topTenTotCase,
+            function(d) {
+              return d.value;
+            });
+          x1.domain([0, maxX1]);
+          y1.domain(topTenTotCase.map(function(d) {
+            return d.key;
+          }));
+          var gy = svg1.append("g")
+            .attr("class", "y axis")
+            .call(yAxis1)
+          var bars = svg1.selectAll(".bar")
+            .data(topTenTotCase)
+            .enter()
+            .append("rect")
+            .attr("class", "barBlue")
+            .attr("y", function(d) {
+              return y1(d.key);
+            })
+            .attr("height", y1.bandwidth())
+            .attr("x", 0)
+            .attr("width", function(d) {
+              return x1(d.value);
+            });
+          //add a value label to the right of each bar
+          var text = svg1.selectAll(".mytexts")
+            .data(topTenTotCase)
+            .enter()
+            .append("text");
+          text.attr("class", "label")
+            //y position of the label is halfway down the bar
+            .attr("y", function(d) {
+              return y1(d.key) + y1.bandwidth() / 2 + 4;
+            })
+            //x position is 3 pixels to the right of the bar
+            .attr("x", function(d) {
+              return x1(d.value) + 5;
+            })
+            .text(function(d) {
+              return d.value;
+            });
+        })
+      </script>
+    </div>
 
-    // add the options to the button
-    d3.select("#selectButton1")
-      .selectAll('myOptions')
-     	.data(allGroup)
-      .enter()
-    	.append('option')
-      .text(function (d) { return d; }) // text showed in the menu
-      .attr("value", function (d) { return d; }) // corresponding value returned by the button
-     .property("selected", function(d) {return d===allGroup[0];});
+    <div class="mySlides">
 
-  // add the options to the button
-    d3.select("#selectButton2")
-      .selectAll('myOptions')
-     	.data(allGroup)
-      .enter()
-    	.append('option')
-      .text(function (d) { return d; }) // text showed in the menu
-      .attr("value", function (d) { return d; }) // corresponding value returned by the button
-      .property("selected", function(d) {return d===allGroup[1];});
+      <!-- Create a div where the graph will take place -->
+      <div id="dataviz2"></div>
 
-    // A color scale: one color for each group
-    var myColor = d3.scaleOrdinal()
-      .domain(allGroup)
-      .range(d3.schemeSet2);
+      <script>
+        // set the dimensions and margins of the graph
+        // append the svg obgect to the body of the page
+        // appends a 'group' element to 'svg'
+        // moves the 'group' element to the top left margin
+        var svg2 = d3.select("#dataviz2").append("svg")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom)
+          .append("g")
+          .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
+        // set the ranges
+        var x2 = d3.scaleLinear().range([0, width]);
+        var xAxis2 = d3.axisBottom(x2);
+        var y2 = d3.scaleBand().rangeRound([height, 0]).padding(0.1);
+        var yAxis2 = d3.axisLeft(y2);
+        //Read the data
+        d3.csv("full_data.csv").then(function(data) {
+          data.forEach(function(d) {
+            d.date = parser(d.date);
+            d.total_deaths = +d.total_deaths;
+            d.location = d.location;
+          });
+          var totalDeaths = d3.nest().key(function(d) {
+            return d.location;
+          }).rollup(function(v) {
+            return v.pop().total_deaths;
+          }).entries(data);
 
-    // parse the date / time
-    //var parseTime = d3.timeParse("%d-%b-%y");
+          function getTopTen(d) {
+            d.sort(function(a, b) {
+              return d3.ascending(b.value, a.value);
+            });
+            return d.slice(1, 11);
+          }
+          var topTenTotDeath = getTopTen(totalDeaths)
+          topTenTotDeath.sort(function(a, b) {
+            return d3.ascending(a.value, b.value);
+          });
+          var maxX2 = d3.max(topTenTotDeath,
+            function(d) {
+              return d.value;
+            });
+          x2.domain([0, maxX2]);
+          y2.domain(topTenTotDeath.map(function(d) {
+            return d.key;
+          }));
+          var gy = svg2.append("g")
+            .attr("class", "y axis")
+            .call(yAxis2)
+          var bars = svg2.selectAll(".bar")
+            .data(topTenTotDeath)
+            .enter()
+            .append("rect")
+            .attr("class", "barRed")
+            .attr("y", function(d) {
+              return y2(d.key);
+            })
+            .attr("height", y2.bandwidth())
+            .attr("x", 0)
+            .attr("width", function(d) {
+              return x2(d.value);
+            })
+          //add a value label to the right of each bar
+          var text2 = svg2.selectAll(".mytexts")
+            .data(topTenTotDeath)
+            .enter()
+            .append("text");
+          text2.attr("class", "label")
+            //y position of the label is halfway down the bar
+            .attr("y", function(d) {
+              return y2(d.key) + y2.bandwidth() / 2 + 4;
+            })
+            //x position is 3 pixels to the right of the bar
+            .attr("x", function(d) {
+              return x2(d.value) + 5;
+            })
+            .text(function(d) {
+              return d.value;
+            });
+        })
+      </script>
+    </div>
 
-    // Add X axis --> it is a date format
-    //var x = d3.scaleLinear()
-    //  .domain(d3.extent(data, function(d) { return d.year; }))
-    //  .range([ 0, width ]);
-    //svg.append("g")
-    //  .attr("transform", "translate(0," + height + ")")
-    //  .call(d3.axisBottom(x).ticks(7));
-  
-    
-    // Add Y axis
-    //var y = d3.scaleLinear()
-    //  .domain([0, d3.max(data, function(d) { return +d.n; })])
-    //  .range([ height, 0 ]);
-    //svg.append("g")
-    //  .call(d3.axisLeft(y));
-    // Scale the range of the data
-  
-    x.domain(d3.extent(data, function(d) { return d.date; }));
-    
-    var data1 = data.filter(function(d){return d.location==allGroup[0]});  
-    var data2 = data.filter(function(d){return d.location==allGroup[1]});  
-    var max1 = d3.max(data1, function(d) { return d.total_cases;});  
-    var max2 = d3.max(data2, function(d) { return d.total_cases;});  
-    var maxy = d3.max([max1,max2])
-    //y.domain([0, d3.max(data, function(d) { return d.total_cases; })]);
-    y.domain([0, maxy]);
+    <div class="mySlides">
 
+      <form id="caseOrDeath">
+        <input type='radio' value="Cases" name="mode" checked>Cases</input>
+        <input type='radio' value="Deaths" name="mode">Deaths</input>
+      </form>
+      <form id="logLin">
+        <input type='radio' value="Linear" name="yLinLog" checked>Linear</input>
+        <input type='radio' value="Logarithmic" name="yLinLog">Logarithmic</input>
+      </form>
 
-    // Initialize line with first group of the list
-    //var line = svg
-    //  .append('g')
-    //  .append("path")
-    //    .datum(data.filter(function(d){return d.name==allGroup[0]}))
-    //    .attr("d", d3.line()
-    //      .x(function(d) { return x(d.year) })
-    //      .y(function(d) { return y(+d.n) })
-    //    )
-    //    .attr("stroke", function(d){ return myColor("valueA") })
-    //    .style("stroke-width", 4)
-    //    .style("fill", "none")
+      <!-- Create a div  -->
+      <div id="dataviz3"></div>
 
-  
-    // Add the valueline path.
-  var line1 = svg.append("path")
-      .datum(data.filter(function(d){return d.location==allGroup[0]}))
-      .attr("class", "line")
-      .attr("d", valueline)
-      .attr("stroke", function(d){ return myColor("valueA") })
-      .style("stroke-width", 4)
-      .style("fill", "none")
-  
-  var line2 = svg.append("path")    
-      .datum(data.filter(function(d){return d.location==allGroup[1]}))
-      .attr("class", "line")
-      .attr("d", valueline)
-      .attr("stroke", function(d){ return myColor("valueB") })
-      .style("stroke-width", 4)
-      .style("fill", "none")
+      <!-- Initialize a select button -->
+      <select id="selectButton1"></select>
+      <select id="selectButton2"></select>
 
+      <script>
+        //Read the data
+        d3.csv("full_data.csv").then(function(data) {
+          data.forEach(function(d) {
+            d.date = parser(d.date);
+            d.total_cases = +d.total_cases;
+            d.total_deaths = +d.total_deaths;
+            d.location = d.location;
+          });
+          // List of groups (here I have one group per column)
+          var allGroup = d3.map(data, function(d) {
+            return (d.location)
+          }).keys()
+          // add the options to the button
+          d3.select("#selectButton1")
+            .selectAll('myOptions')
+            .data(allGroup)
+            .enter()
+            .append('option')
+            .text(function(d) {
+              return d;
+            }) // text showed in the menu
+            .attr("value", function(d) {
+              return d;
+            }) // corresponding value returned by the button
+            .property("selected", function(d) {
+              return d === allGroup[0];
+            });
+          // add the options to the button
+          d3.select("#selectButton2")
+            .selectAll('myOptions')
+            .data(allGroup)
+            .enter()
+            .append('option')
+            .text(function(d) {
+              return d;
+            }) // text showed in the menu
+            .attr("value", function(d) {
+              return d;
+            }) // corresponding value returned by the button
+            .property("selected", function(d) {
+              return d === allGroup[1];
+            });
+          // A function that update the chart
+          function generatePlots(selectedGroup1, selectedGroup2, casesOrDeaths, lineOrLog) {
+            d3.select("#dataviz3").select("svg").remove();
+            var x = d3.scaleTime().range([0, width]);
+            var xAxis = d3.axisBottom(x);
+            if (lineOrLog == "Linear") {
+              var y = d3.scaleLinear().range([height, 0])
+            } else {
+              var y = d3.scaleLog().range([height, 0])
+            };
+            var yAxis = d3.axisLeft(y).tickFormat(d3.format("~s"));
+            // gridlines in x axis function
+            function make_x_gridlines() {
+              return d3.axisBottom(x)
+                .ticks(5)
+            }
+            // gridlines in y axis function
+            function make_y_gridlines() {
+              return d3.axisLeft(y)
+                .ticks(10)
+            }
+            x.domain(d3.extent(data, function(d) {
+              return d.date;
+            }));
+            if (lineOrLog == "Logarithmic" & casesOrDeaths == "Cases") {
+              data = data.filter(function(d) {
+              return d.total_cases>0
+            })};
+            if (lineOrLog == "Logarithmic" & casesOrDeaths == "Deaths") {
+              data = data.filter(function(d) {
+              return d.total_deaths>0
+            })};
+            
+            // Create new data with the selection?
+            var dataFilter1 = data.filter(function(d) {
+              return d.location == selectedGroup1
+            })
+            var dataFilter2 = data.filter(function(d) {
+              return d.location == selectedGroup2
+            })
+            max1 = d3.max(dataFilter1, function(d) {
+              if (casesOrDeaths == "Deaths") {
+                return d.total_deaths
+              } else {
+                return d.total_cases
+              };
+            });
+            max2 = d3.max(dataFilter2, function(d) {
+              if (casesOrDeaths == "Deaths") {
+                return d.total_deaths
+              } else {
+                return d.total_cases
+              };
+            });
+            maxy = d3.max([max1, max2])
+            y.domain([1, maxy]);
+            // define the line
+            var valueline = d3.line()
+              .x(function(d) {
+                return x(d.date);
+              })
+              .y(function(d) {
+                if (casesOrDeaths == "Deaths") {
+                  return y(d.total_deaths)
+                } else {
+                  return y(d.total_cases)
+                };
+              });
+            // append the svg
+            var svg3 = d3.select("#dataviz3").append("svg")
+              .attr("width", width + margin.left + margin.right)
+              .attr("height", height + margin.top + margin.bottom)
+              .append("g")
+              .attr("transform",
+                "translate(" + margin.left + "," + margin.top + ")");
+            // add the X gridlines
+            svg3.append("g")
+              .attr("class", "grid")
+              .attr("transform", "translate(0," + height + ")")
+              .call(make_x_gridlines()
+                .tickSize(-height)
+                .tickFormat("")
+              )
+            // add the Y gridlines
+            svg3.append("g")
+              .attr("class", "grid")
+              .call(make_y_gridlines()
+                .tickSize(-width)
+                .tickFormat("")
+              )
+            // create a list of keys
+            var keys = [selectedGroup1, selectedGroup2]
+            // Usually you have a color scale in your chart already
+            var colorCase = ["lightblue", "darkblue"];
+            var colorDeath = ["red", "darkred"];
+            var line1 = svg3.append("path")
+              .datum(data.filter(function(d) {
+                return d.location == selectedGroup1
+              }))
+              .attr("class", "line")
+              .attr("d", valueline)
+              .attr("stroke", function(d) {
+                if (casesOrDeaths == "Deaths") {
+                  return colorDeath[0]
+                } else {
+                  return colorCase[0]
+                };
+              })
+              .style("stroke-width", 4)
+              .style("fill", "none")
+            var line2 = svg3.append("path")
+              .datum(data.filter(function(d) {
+                return d.location == selectedGroup2
+              }))
+              .attr("class", "line")
+              .attr("d", valueline)
+              .attr("stroke", function(d) {
+                if (casesOrDeaths == "Deaths") {
+                  return colorDeath[1]
+                } else {
+                  return colorCase[1]
+                };
+              })
+              .style("stroke-width", 4)
+              .style("fill", "none")
+            // Add the x Axis
+            svg3.append("g")
+              .attr("transform", "translate(0," + height + ")")
+              .attr("class", "x axis")
+              .call(xAxis);
+            // Add the y Axis
+            svg3.append("g")
+              .attr("class", "y axis")
+              .call(yAxis);
+            svg3.selectAll("mydots")
+              .data(keys)
+              .enter()
+              .append("rect")
+              .attr("x", 100)
+              .attr("y", function(d, i) {
+                return 100 + i * 25
+              }) // 100 is where the first dot appears. 25 is the distance between dots
+              .attr("width", 20)
+              .attr("height", 20)
+              .style("fill", function(d, i) {
+                if (casesOrDeaths == "Deaths") {
+                  return colorDeath[i]
+                } else {
+                  return colorCase[i]
+                };
+              });
+            // Add one dot in the legend for each name.
+            svg3.selectAll("mylabels")
+              .data(keys)
+              .enter()
+              .append("text")
+              .attr("x", 100 + 20 * 1.2)
+              .attr("y", function(d, i) {
+                return 100 + i * 25 + 10
+              }) // 100 is where the first dot appears. 25 is the distance between dots
+              .style("fill", function(d, i) {
+                if (casesOrDeaths == "Deaths") {
+                  return colorDeath[i]
+                } else {
+                  return colorCase[i]
+                };
+              })
+              .text(function(d) {
+                return d
+              })
+              .attr("text-anchor", "left")
+              .style("alignment-baseline", "middle")
+          }
+          generatePlots(allGroup[0], allGroup[1], "Cases", "Linear")
+          var selectedOption1 = d3.select("#selectButton1").property("value")
+          var selectedOption2 = d3.select("#selectButton2").property("value")
+          var selectedOption3 = d3.selectAll("input[name='mode']:checked").node().value
+          var selectedOption4 = d3.selectAll("input[name='yLinLog']:checked").node().value
+          // When the button is changed, update chart 
+          d3.select("#selectButton1").on("change", function(d) {
+            selectedOption1 = d3.select("#selectButton1").property("value")
+            generatePlots(selectedOption1, selectedOption2, selectedOption3, selectedOption4)
+          });
+          // When the button is changed, update chart 
+          d3.select("#selectButton2").on("change", function(d) {
+            selectedOption2 = d3.select("#selectButton2").property("value")
+            generatePlots(selectedOption1, selectedOption2, selectedOption3, selectedOption4)
+          });
+          d3.selectAll("input[name='mode']").on('change', function(d) {
+            selectedOption3 = d3.selectAll("input[name='mode']:checked").node().value
+            generatePlots(selectedOption1, selectedOption2, selectedOption3, selectedOption4)
+          });
+          d3.selectAll("input[name='yLinLog']").on('change', function(d) {
+            selectedOption4 = d3.selectAll("input[name='yLinLog']:checked").node().value
+            generatePlots(selectedOption1, selectedOption2, selectedOption3, selectedOption4)
+          });
+        });
+      </script>
+    </div>
 
+    <a class="prev" onclick="plusSlides(-1)">❮</a>
+    <a class="next" onclick="plusSlides(1)">❯</a>
 
-  // Add the x Axis
-  svg.append("g")
-      .attr("transform", "translate(0," + height + ")")
-      .attr("class","x axis")
-      .call(xAxis);
+  </div>
 
-  // Add the y Axis
-  svg.append("g")
-      .attr("class","y axis")
-      .call(yAxis);
-  
-  
-    
-    // A function that update the chart
-    function update(selectedGroup1, selectedGroup2) {
+  <div class="dot-container">
+    <span class="dot" onclick="currentSlide(1)"></span>
+    <span class="dot" onclick="currentSlide(2)"></span>
+    <span class="dot" onclick="currentSlide(3)"></span>
+  </div>
 
-      // Create new data with the selection?
-      var dataFilter1 = data.filter(function(d){return d.location==selectedGroup1})
-      var dataFilter2 = data.filter(function(d){return d.location==selectedGroup2})
+  <script>
+    var slideIndex = 1;
+    showSlides(slideIndex);
 
-      max1 = d3.max(dataFilter1, function(d) { return d.total_cases;});
-      max2 = d3.max(dataFilter2, function(d) { return d.total_cases;});  
-      maxy = d3.max([max1,max2])
-      //y.domain([0, d3.max(data, function(d) { return d.total_cases; })]);
-      y.domain([0, maxy]);
-      
-      // Give these new data to update line
-      line1
-          .datum(dataFilter1)
-          .transition()
-          .duration(1000)
-          .attr("d", d3.line()
-            .x(function(d) { return x(d.date) })
-            .y(function(d) { return y(d.total_cases) })
-          )
-          .attr("stroke", function(d){ return myColor(selectedGroup1) })
-      
-       // Give these new data to update line
-      line2
-          .datum(dataFilter2)
-          .transition()
-          .duration(1000)
-          .attr("d", d3.line()
-            .x(function(d) { return x(d.date) })
-            .y(function(d) { return y(d.total_cases) })
-          )
-          .attr("stroke", function(d){ return myColor(selectedGroup2) })
-      
-      svg.selectAll(".y.axis")
-          .transition().duration(1000)
-          .call(yAxis);
-      
-      
+    function plusSlides(n) {
+      showSlides(slideIndex += n);
     }
-  
-  
-    // When the button is changed, run the updateChart function
-    d3.select("#selectButton1").on("change", function(d) {
-        // recover the option that has been chosen
-        //var selectedOption = d3.select(this).property("value")
-        var selectedOption1 = d3.select("#selectButton1").property("value")
-        var selectedOption2 = d3.select("#selectButton2").property("value")
-        // run the updateChart function with this selected option
-        update(selectedOption1, selectedOption2)
-    })
-  
-    // When the button is changed, run the updateChart function
-    d3.select("#selectButton2").on("change", function(d) {
-        // recover the option that has been chosen
-        //var selectedOption = d3.select(this).property("value")
-        var selectedOption1 = d3.select("#selectButton1").property("value")
-        var selectedOption2 = d3.select("#selectButton2").property("value")
-        // run the updateChart function with this selected option
-        update(selectedOption1, selectedOption2)
-    })
 
-})
+    function currentSlide(n) {
+      showSlides(slideIndex = n);
+    }
 
+    function showSlides(n) {
+      var i;
+      var slides = document.getElementsByClassName("mySlides");
+      var dots = document.getElementsByClassName("dot");
+      if (n > slides.length) {
+        slideIndex = 1
+      }
+      if (n < 1) {
+        slideIndex = slides.length
+      }
+      for (i = 0; i < slides.length; i++) {
+        slides[i].style.display = "none";
+      }
+      for (i = 0; i < dots.length; i++) {
+        dots[i].className = dots[i].className.replace(" active", "");
+      }
+      slides[slideIndex - 1].style.display = "block";
+      dots[slideIndex - 1].className += " active";
+    }
+  </script>
 
-</script>
+</body>
+
+</html>
