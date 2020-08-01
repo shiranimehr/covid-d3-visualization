@@ -141,12 +141,12 @@
         // set the dimensions and margins of the graph
         var margin = {
             top: 10,
-            right: 120,
+            right: 150,
             bottom: 30,
-            left: 120
+            left: 150
           },
           width = 2 * 460 - margin.left - margin.right,
-          height = 2 * 400 - margin.top - margin.bottom;
+          height = 1.2 * 400 - margin.top - margin.bottom;
         // append the svg obgect to the body of the page
         // appends a 'group' element to 'svg'
         // moves the 'group' element to the top left margin
@@ -154,6 +154,7 @@
           .attr("width", width + margin.left + margin.right)
           .attr("height", height + margin.top + margin.bottom)
           .append("g")
+          .style("font-size", "17px")
           .attr("transform",
             "translate(" + margin.left + "," + margin.top + ")");
         // set the ranges
@@ -200,6 +201,7 @@
           }));
           var gy = svg1.append("g")
             .attr("class", "y axis")
+            .style("font-size", "17px")
             .call(yAxis1)
           var bars = svg1.selectAll(".bar")
             .data(topTenTotCase)
@@ -249,6 +251,7 @@
           .attr("width", width + margin.left + margin.right)
           .attr("height", height + margin.top + margin.bottom)
           .append("g")
+          .style("font-size", "17px")
           .attr("transform",
             "translate(" + margin.left + "," + margin.top + ")");
         // set the ranges
@@ -289,6 +292,7 @@
           }));
           var gy = svg2.append("g")
             .attr("class", "y axis")
+            .style("font-size", "17px")
             .call(yAxis2)
           var bars = svg2.selectAll(".bar")
             .data(topTenTotDeath)
@@ -458,6 +462,7 @@
               .attr("width", width + margin.left + margin.right)
               .attr("height", height + margin.top + margin.bottom)
               .append("g")
+              .style("font-size", "17px")
               .attr("transform",
                 "translate(" + margin.left + "," + margin.top + ")");
             // add the X gridlines
@@ -514,10 +519,12 @@
             svg3.append("g")
               .attr("transform", "translate(0," + height + ")")
               .attr("class", "x axis")
+              .style("font-size", "15px")
               .call(xAxis);
             // Add the y Axis
             svg3.append("g")
               .attr("class", "y axis")
+              .style("font-size", "15px")
               .call(yAxis);
             svg3.selectAll("mydots")
               .data(keys)
