@@ -134,19 +134,39 @@
 
     <div class="mySlides">
 
-      <!-- Create a div where the graph will take place -->
-      <div id="dataviz1"></div>
-
-      <script>
-        // set the dimensions and margins of the graph
-        var margin = {
+      <h2>Compare Two Countries Side by Side</h2>
+      <div id="dataviz0"></div>
+      
+       <script>
+       var margin = {
             top: 10,
             right: 150,
             bottom: 30,
             left: 150
           },
-          width = 2 * 460 - margin.left - margin.right,
-          height = 1.2 * 400 - margin.top - margin.bottom;
+          width = 1.5 * 460 - margin.left - margin.right,
+          height = 1.5 * 400 - margin.top - margin.bottom;
+        // append the svg obgect to the body of the page
+        // appends a 'group' element to 'svg'
+        // moves the 'group' element to the top left margin
+        var svg1 = d3.select("#dataviz0").append("svg")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom)
+          .append("g")
+          .style("font-size", "17px")
+          .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
+       </script>
+      
+    </div>
+
+    <div class="mySlides">
+
+      <h2>Top 10 Countries (Total Cases)</h2>
+      <!-- Create a div where the graph will take place -->
+      <div id="dataviz1"></div>
+
+      <script>
         // append the svg obgect to the body of the page
         // appends a 'group' element to 'svg'
         // moves the 'group' element to the top left margin
@@ -239,6 +259,8 @@
 
     <div class="mySlides">
 
+      <h2>Top 10 Countries (Total Deaths)</h2>
+
       <!-- Create a div where the graph will take place -->
       <div id="dataviz2"></div>
 
@@ -330,6 +352,8 @@
 
     <div class="mySlides">
 
+      <h2>Compare Two Countries Side by Side</h2>
+
       <form id="caseOrDeath">
         <input type='radio' value="Cases" name="mode" checked>Cases</input>
         <input type='radio' value="Deaths" name="mode">Deaths</input>
@@ -347,6 +371,15 @@
       <select id="selectButton2"></select>
 
       <script>
+        var margin2 = {
+            top: 10,
+            right: 150,
+            bottom: 30,
+            left: 150
+          },
+          width2 = 1.7 * 470 - margin2.left - margin2.right,
+          height2 = 1.375 * 389.5 - margin2.top - margin2.bottom;
+      
         //Read the data
         d3.csv("full_data.csv").then(function(data) {
           data.forEach(function(d) {
@@ -392,12 +425,12 @@
           // A function that update the chart
           function generatePlots(selectedGroup1, selectedGroup2, casesOrDeaths, lineOrLog) {
             d3.select("#dataviz3").select("svg").remove();
-            var x = d3.scaleTime().range([0, width]);
+            var x = d3.scaleTime().range([0, width2]);
             var xAxis = d3.axisBottom(x);
             if (lineOrLog == "Linear") {
-              var y = d3.scaleLinear().range([height, 0])
+              var y = d3.scaleLinear().range([height2, 0])
             } else {
-              var y = d3.scaleLog().range([height, 0])
+              var y = d3.scaleLog().range([height2, 0])
             };
             var yAxis = d3.axisLeft(y).tickFormat(d3.format("~s"));
             // gridlines in x axis function
@@ -415,13 +448,14 @@
             }));
             if (lineOrLog == "Logarithmic" & casesOrDeaths == "Cases") {
               data = data.filter(function(d) {
-              return d.total_cases>0
-            })};
+                return d.total_cases > 0
+              })
+            };
             if (lineOrLog == "Logarithmic" & casesOrDeaths == "Deaths") {
               data = data.filter(function(d) {
-              return d.total_deaths>0
-            })};
-            
+                return d.total_deaths > 0
+              })
+            };
             // Create new data with the selection?
             var dataFilter1 = data.filter(function(d) {
               return d.location == selectedGroup1
@@ -459,25 +493,25 @@
               });
             // append the svg
             var svg3 = d3.select("#dataviz3").append("svg")
-              .attr("width", width + margin.left + margin.right)
-              .attr("height", height + margin.top + margin.bottom)
+              .attr("width", width2 + margin2.left + margin2.right)
+              .attr("height", height2 + margin2.top + margin2.bottom)
               .append("g")
               .style("font-size", "17px")
               .attr("transform",
-                "translate(" + margin.left + "," + margin.top + ")");
+                "translate(" + margin2.left + "," + margin2.top + ")");
             // add the X gridlines
             svg3.append("g")
               .attr("class", "grid")
-              .attr("transform", "translate(0," + height + ")")
+              .attr("transform", "translate(0," + height2 + ")")
               .call(make_x_gridlines()
-                .tickSize(-height)
+                .tickSize(-height2)
                 .tickFormat("")
               )
             // add the Y gridlines
             svg3.append("g")
               .attr("class", "grid")
               .call(make_y_gridlines()
-                .tickSize(-width)
+                .tickSize(-width2)
                 .tickFormat("")
               )
             // create a list of keys
@@ -517,7 +551,7 @@
               .style("fill", "none")
             // Add the x Axis
             svg3.append("g")
-              .attr("transform", "translate(0," + height + ")")
+              .attr("transform", "translate(0," + height2 + ")")
               .attr("class", "x axis")
               .style("font-size", "15px")
               .call(xAxis);
@@ -532,8 +566,8 @@
               .append("rect")
               .attr("x", 100)
               .attr("y", function(d, i) {
-                return 100 + i * 25
-              }) // 100 is where the first dot appears. 25 is the distance between dots
+                return 90 + i * 20
+              }) 
               .attr("width", 20)
               .attr("height", 20)
               .style("fill", function(d, i) {
@@ -601,6 +635,7 @@
     <span class="dot" onclick="currentSlide(1)"></span>
     <span class="dot" onclick="currentSlide(2)"></span>
     <span class="dot" onclick="currentSlide(3)"></span>
+    <span class="dot" onclick="currentSlide(4)"></span>
   </div>
 
   <script>
