@@ -227,7 +227,7 @@
           return d.slice(1, 11);
         }
         //Read the data
-        var url = "full_data.csv";
+        var url = "https://covid.ourworldindata.org/data/ecdc/full_data.csv";
         d3.csv(url).then(function(data) {
           data.forEach(function(d) {
             d.date = parser(d.date);
