@@ -124,6 +124,11 @@
       stroke: black;
       opacity: 0.8;
     }
+
+    li span {
+      position: relative;
+      left: -600px;
+    }
   </style>
 </head>
 
@@ -134,11 +139,18 @@
 
     <div class="mySlides">
 
-      <h2>Compare Two Countries Side by Side</h2>
+      <h2>Covid 19 Cases by Country</h2>
+
+      <ul>
+        <li><span>Slide 2</span></li>
+        <li><span>Slide 3</span></li>
+        <li><span>Slide 4</span></li>
+      </ul>
+
       <div id="dataviz0"></div>
-      
-       <script>
-       var margin = {
+
+      <script>
+        var margin = {
             top: 10,
             right: 150,
             bottom: 30,
@@ -156,8 +168,8 @@
           .style("font-size", "17px")
           .attr("transform",
             "translate(" + margin.left + "," + margin.top + ")");
-       </script>
-      
+      </script>
+
     </div>
 
     <div class="mySlides">
@@ -379,7 +391,6 @@
           },
           width2 = 1.7 * 470 - margin2.left - margin2.right,
           height2 = 1.375 * 389.5 - margin2.top - margin2.bottom;
-      
         //Read the data
         d3.csv("full_data.csv").then(function(data) {
           data.forEach(function(d) {
@@ -567,7 +578,7 @@
               .attr("x", 10)
               .attr("y", function(d, i) {
                 return 10 + i * 20
-              }) 
+              })
               .attr("width", 20)
               .attr("height", 20)
               .style("fill", function(d, i) {
