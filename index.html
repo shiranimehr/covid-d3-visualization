@@ -131,7 +131,7 @@
     }
 
     ul li {
-      padding: 20px 0px;
+      padding: 5px 0px;
     }
 
     div.center {
@@ -161,6 +161,12 @@
         <li><span> Slide 2 shows top 10 countries baesd  on number of cases. </span></li>
         <li><span> Slide 3 illustrates top 10 countries based on number of deaths.</span></li>
         <li><span> Slide 4 is an interactive chart for comparing any two countries in terms of number of cases or deaths over time in logarithmic or linear domain. </span></li>
+        <li><span> References for code:
+          <ul>
+         <li><span>  <i> <a href="https://www.w3schools.com/howto/howto_js_quotes_slideshow.asp"> https://www.w3schools.com/howto/howto_js_quotes_slideshow.asp </a> </i> </span></li>
+        <li><span>  <i> <a href="https://www.d3-graph-gallery.com/graph/custom_legend.html"> https://www.d3-graph-gallery.com/graph/custom_legend.html </a> </i> </span></li>
+        <li><span>  <i> <a href="https://bl.ocks.org/larsenmtl/e3b8b7c2ca4787f77d78f58d41c3da91"> https://bl.ocks.org/larsenmtl/e3b8b7c2ca4787f77d78f58d41c3da91 </a> </i> </span></li>
+        <li><span>  <i> <a href="   http://bl.ocks.org/35degrees/23873a64ceec2390c400694b6a8b57d9"> http://bl.ocks.org/35degrees/23873a64ceec2390c400694b6a8b57d9 </a> </i> </span></li>
       </ul>
 
       <div id="dataviz0"></div>
@@ -173,7 +179,7 @@
             left: 150
           },
           width0 = 1.5 * 460 - margin0.left - margin0.right,
-          height0 = 0.77 * 398 - margin0.top - margin0.bottom;
+          height0 = 0.707 * 398 - margin0.top - margin0.bottom;
         // append the svg obgect to the body of the page
         // appends a 'group' element to 'svg'
         // moves the 'group' element to the top left margin
@@ -235,7 +241,7 @@
             d.location = d.location;
           });
           // List of groups (here I have one group per column)
-          var allGroup = d3.map(data, function(d) {
+          var allCountryNames = d3.map(data, function(d) {
             return (d.location)
           }).keys()
           var totalCases = d3.nest().key(function(d) {
@@ -411,7 +417,7 @@
             bottom: 30,
             left: 150
           },
-          width2 = 1.7 * 470 - margin2.left - margin2.right,
+          width2 = 2.9 * 470 - margin2.left - margin2.right,
           height2 = 1.375 * 389.5 - margin2.top - margin2.bottom;
         //Read the data
         d3.csv(url).then(function(data) {
@@ -422,13 +428,13 @@
             d.location = d.location;
           });
           // List of groups
-          var allGroup = d3.map(data, function(d) {
+          var allCountryNames = d3.map(data, function(d) {
             return (d.location)
           }).keys()
           // Add to button 1
           d3.select("#selectButton1")
             .selectAll('myOptions')
-            .data(allGroup)
+            .data(allCountryNames)
             .enter()
             .append('option')
             .text(function(d) {
@@ -438,12 +444,12 @@
               return d;
             })
             .property("selected", function(d) {
-              return d === allGroup[0];
+              return d === allCountryNames[0];
             });
           // Add to button 2
           d3.select("#selectButton2")
             .selectAll('myOptions')
-            .data(allGroup)
+            .data(allCountryNames)
             .enter()
             .append('option')
             .text(function(d) {
@@ -453,10 +459,10 @@
               return d;
             })
             .property("selected", function(d) {
-              return d === allGroup[1];
+              return d === allCountryNames[1];
             });
           // A function for generating/updating the chart
-          function generatePlots(selectedGroup1, selectedGroup2, casesOrDeaths, lineOrLog) {
+          function generatePlots(countryName1, countryName2, casesOrDeaths, lineOrLog) {
             d3.select("#dataviz3").select("svg").remove();
             var x = d3.scaleTime().range([0, width2]);
             var xAxis = d3.axisBottom(x);
@@ -469,7 +475,7 @@
             // Gridlines in x axis function
             function make_x_gridlines() {
               return d3.axisBottom(x)
-                .ticks(5)
+                .ticks(10)
             }
             // Gridlines in y axis function
             function make_y_gridlines() {
@@ -491,10 +497,10 @@
             };
             // Filter data based on country selection
             var dataFilter1 = data.filter(function(d) {
-              return d.location == selectedGroup1
+              return d.location == countryName1
             })
             var dataFilter2 = data.filter(function(d) {
-              return d.location == selectedGroup2
+              return d.location == countryName2
             })
             max1 = d3.max(dataFilter1, function(d) {
               if (casesOrDeaths == "Deaths") {
@@ -511,7 +517,7 @@
               };
             });
             maxy = d3.max([max1, max2])
-            y.domain([1, maxy]);
+            y.domain([0.999, maxy]);
             // Define the line
             var valueline = d3.line()
               .x(function(d) {
@@ -548,38 +554,30 @@
                 .tickFormat("")
               )
             // create a list of keys
-            var keys = [selectedGroup1, selectedGroup2]
-            // Blue color for cases
-            var colorCase = ["lightblue", "darkblue"];
-            // Red color for deaths
-            var colorDeath = ["red", "darkred"];
-            var line1 = svg3.append("path")
-              .datum(data.filter(function(d) {
-                return d.location == selectedGroup1
-              }))
+            var keys = [countryName1, countryName2]
+            // color for lines
+            if (casesOrDeaths == "Deaths") {
+              var color = ["red", "darkred"];
+            } else {
+              var color = ["lightblue", "darkblue"];
+            };
+            // Filter country 1 and 2 data
+            var countryData1 = data.filter(function(d) {
+              return d.location == countryName1
+            });
+            var countryData2 = data.filter(function(d) {
+              return d.location == countryName2
+            });
+            var countryData = [countryData1, countryData2]
+            var country = svg3.selectAll(".country")
+              .data(countryData)
+              .enter().append("g")
+              .attr("class", "country");
+            country.append("path")
               .attr("class", "line")
               .attr("d", valueline)
-              .attr("stroke", function(d) {
-                if (casesOrDeaths == "Deaths") {
-                  return colorDeath[0]
-                } else {
-                  return colorCase[0]
-                };
-              })
-              .style("stroke-width", 4)
-              .style("fill", "none")
-            var line2 = svg3.append("path")
-              .datum(data.filter(function(d) {
-                return d.location == selectedGroup2
-              }))
-              .attr("class", "line")
-              .attr("d", valueline)
-              .attr("stroke", function(d) {
-                if (casesOrDeaths == "Deaths") {
-                  return colorDeath[1]
-                } else {
-                  return colorCase[1]
-                };
+              .attr("stroke", function(d, i) {
+                return color[i]
               })
               .style("stroke-width", 4)
               .style("fill", "none")
@@ -605,13 +603,9 @@
               .attr("width", 20)
               .attr("height", 20)
               .style("fill", function(d, i) {
-                if (casesOrDeaths == "Deaths") {
-                  return colorDeath[i]
-                } else {
-                  return colorCase[i]
-                };
+                return color[i]
               });
-            // Add dot in the legend
+            // Add legend
             svg3.selectAll("mylabels")
               .data(keys)
               .enter()
@@ -621,20 +615,94 @@
                 return 10 + i * 25 + 10
               })
               .style("fill", function(d, i) {
-                if (casesOrDeaths == "Deaths") {
-                  return colorDeath[i]
-                } else {
-                  return colorCase[i]
-                };
+                return color[i]
               })
               .text(function(d) {
                 return d
               })
               .attr("text-anchor", "left")
               .style("alignment-baseline", "middle")
+            var mouseG = svg3.append("g")
+              .attr("class", "mouse-over-effects");
+            mouseG.append("path") // this is the black vertical line to follow mouse
+              .attr("class", "mouse-line")
+              .style("stroke", "black")
+              .style("stroke-width", "1px")
+              .style("opacity", "0");
+            var lines = document.getElementsByClassName('line');
+            var mousePerLine = mouseG.selectAll('.mouse-per-line')
+              .data(countryData)
+              .enter()
+              .append("g")
+              .attr("class", "mouse-per-line");
+            mousePerLine.append("circle")
+              .attr("r", 7)
+              .style("stroke", function(d, i) {
+                return color[i]
+              })
+              .style("fill", "none")
+              .style("stroke-width", "1px")
+              .style("opacity", "0");
+            mousePerLine.append("text")
+              .attr("transform", "translate(10,3)");
+            mouseG.append('svg3:rect') // append a rect to catch mouse movements on canvas
+              .attr('width', width2) // can't catch mouse events on a g element
+              .attr('height', height2)
+              .attr('fill', 'none')
+              .attr('pointer-events', 'all')
+              .on('mouseout', function() { // on mouse out hide line, circles and text
+                d3.select(".mouse-line")
+                  .style("opacity", "0");
+                d3.selectAll(".mouse-per-line circle")
+                  .style("opacity", "0");
+                d3.selectAll(".mouse-per-line text")
+                  .style("opacity", "0");
+              })
+              .on('mouseover', function() { // on mouse in show line, circles and text
+                d3.select(".mouse-line")
+                  .style("opacity", "1");
+                d3.selectAll(".mouse-per-line circle")
+                  .style("opacity", "1");
+                d3.selectAll(".mouse-per-line text")
+                  .style("opacity", "1");
+              })
+              .on('mousemove', function() { // mouse moving over canvas
+                var mouse = d3.mouse(this);
+                d3.select(".mouse-line")
+                  .attr("d", function() {
+                    var d = "M" + mouse[0] + "," + height2;
+                    d += " " + mouse[0] + "," + 0;
+                    return d;
+                  });
+                d3.selectAll(".mouse-per-line")
+                  .attr("transform", function(d, i) {
+                    console.log(width2 / mouse[0])
+                    var xDate = x.invert(mouse[0]),
+                      bisect = d3.bisector(function(d) {
+                        return d.date;
+                      }).right;
+                    idx = bisect(d.values, xDate);
+                    var beginning = 0,
+                      end = lines[i].getTotalLength(),
+                      target = null;
+                    while (true) {
+                      target = Math.floor((beginning + end) / 2);
+                      pos = lines[i].getPointAtLength(target);
+                      if ((target === end || target === beginning) && pos.x !== mouse[0]) {
+                        break;
+                      }
+                      if (pos.x > mouse[0]) end = target;
+                      else if (pos.x < mouse[0]) beginning = target;
+                      else break; //position found
+                    }
+                    d3.select(this).select('text')
+                      .text(y.invert(pos.y).toFixed(0));
+                    return "translate(" + mouse[0] + "," + pos.y + ")";
+                  });
+              });
           }
           // Generate default chart
-          generatePlots(allGroup[0], allGroup[1], "Cases", "Linear")
+          generatePlots(allCountryNames[0], allCountryNames[1], "Cases", "Linear")
           var selectedOption1 = d3.select("#selectButton1").property("value")
           var selectedOption2 = d3.select("#selectButton2").property("value")
           var selectedOption3 = d3.selectAll("input[name='mode']:checked").node().value
