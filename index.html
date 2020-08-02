@@ -127,7 +127,21 @@
 
     li span {
       position: relative;
-      left: -600px;
+      left: -5px;
+    }
+
+    ul li {
+      padding: 10px 0px;
+    }
+
+    div.center {
+      margin-left: auto;
+      margin-right: auto;
+      display: table;
+    }
+
+    ul {
+      text-align: left;
     }
   </style>
 </head>
@@ -140,34 +154,36 @@
     <div class="mySlides">
 
       <h2>Covid 19 Cases by Country</h2>
+      <h3>Hooman Shiranimehr</h3>
 
       <ul>
-        <li><span>Slide 2</span></li>
-        <li><span>Slide 3</span></li>
-        <li><span>Slide 4</span></li>
+        <li><span> Data is from <i> "Our World in Data - Coronavirus Source Data": <a href="https://ourworldindata.org/coronavirus-source-data"> https://ourworldindata.org/coronavirus-source-data.</a> </i> </span></li>
+        <li><span> Slide 2 shows top 10 countries baesd  on number of cases. </span></li>
+        <li><span> Slide 3 illustrates top 10 contries based on number of deaths.</span></li>
+        <li><span> Slide 4 is an interactive chart for comparing any two coutries in terms of number of cases or deaths over time in logarithmic or linear domain. </span></li>
       </ul>
 
       <div id="dataviz0"></div>
 
       <script>
-        var margin = {
+        var margin0 = {
             top: 10,
             right: 150,
             bottom: 30,
             left: 150
           },
-          width = 1.5 * 460 - margin.left - margin.right,
-          height = 1.5 * 400 - margin.top - margin.bottom;
+          width0 = 1.5 * 460 - margin0.left - margin0.right,
+          height0 = 0.97 * 398 - margin0.top - margin0.bottom;
         // append the svg obgect to the body of the page
         // appends a 'group' element to 'svg'
         // moves the 'group' element to the top left margin
         var svg1 = d3.select("#dataviz0").append("svg")
-          .attr("width", width + margin.left + margin.right)
-          .attr("height", height + margin.top + margin.bottom)
+          .attr("width", width0 + margin0.left + margin0.right)
+          .attr("height", height0 + margin0.top + margin0.bottom)
           .append("g")
           .style("font-size", "17px")
           .attr("transform",
-            "translate(" + margin.left + "," + margin.top + ")");
+            "translate(" + margin0.left + "," + margin0.top + ")");
       </script>
 
     </div>
@@ -179,6 +195,14 @@
       <div id="dataviz1"></div>
 
       <script>
+        var margin = {
+            top: 10,
+            right: 150,
+            bottom: 30,
+            left: 150
+          },
+          width = 1.5 * 460 - margin.left - margin.right,
+          height = 1.5 * 400 - margin.top - margin.bottom;
         // append the svg obgect to the body of the page
         // appends a 'group' element to 'svg'
         // moves the 'group' element to the top left margin
